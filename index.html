@@ -17,8 +17,7 @@
             overflow: hidden; background: #d0f0f5; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             user-select: none; 
-            /* နှိပ်လိုက်ရင် အကွက်ပေါ်တာ ဖျောက်ဖို့ */
-            -webkit-tap-highlight-color: transparent; 
+            -webkit-tap-highlight-color: transparent; /* နှိပ်ရင် အကွက်ပေါ်တာ ဖျောက်ရန် */
         }
 
         /* --- Global Rain (Full Screen) --- */
@@ -57,11 +56,11 @@
 
         .tap-text {
             margin-top: 15px; color: #1a4d55;
-            background: rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 20px;
-            backdrop-filter: blur(5px); font-weight: 600;
+            background: rgba(255,255,255,0.5); border-radius: 10px; padding: 10px 25px;
+            backdrop-filter: blur(5px); font-weight: 600; font-size: 1.1rem;
         }
 
-        /* --- iOS ALERT --- */
+        /* --- iOS ALERT (စာသားကြီးထားသည်) --- */
         .ios-alert-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.4); z-index: 100;
@@ -70,24 +69,31 @@
         }
         .ios-alert {
             background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(20px); width: 270px; border-radius: 14px;
+            backdrop-filter: blur(20px); width: 290px; border-radius: 14px;
             text-align: center; animation: alertShow 0.3s ease-out;
         }
         @keyframes alertShow { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
-        .ios-alert-body { padding: 20px; color: #000; font-size: 14px; }
-        .ios-alert-btn { border-top: 1px solid rgba(0,0,0,0.1); padding: 12px; color: var(--primary); font-weight: 600; cursor: pointer; }
+        
+        .ios-alert-body { padding: 25px 20px; color: #000; font-size: 16px; line-height: 1.6; } /* Font size ကြီးလိုက်သည် */
+        .ios-alert-body b { font-size: 20px; display: block; margin-bottom: 10px; }
+        
+        .ios-alert-btn { 
+            border-top: 1px solid rgba(0,0,0,0.1); padding: 15px; 
+            color: var(--primary); font-weight: 600; font-size: 18px; cursor: pointer; 
+        }
 
-        /* --- SECOND VIDEO (SPLASH - အမြင့်တိုးထားသည်) --- */
+        /* --- SECOND VIDEO (SPLASH - ပြန်ကျုံ့ထားသည်) --- */
         #splash-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: none; justify-content: center; align-items: center;
             background: #000; z-index: 80;
         }
         #vid-splash {
-            width: 90%; 
-            height: 75%; /* အပေါ်အောက် အမြင့်ကို တိုးလိုက်သည် */
-            border-radius: 15px;
-            object-fit: cover; /* ပုံစံမပျက်ဘဲ အကွက်ထဲအပြည့်ဖြစ်အောင် */
+            width: 80%; /* ပြန်ကျုံ့လိုက်သည် */
+            max-height: 65%; 
+            border-radius: 20px;
+            object-fit: contain;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
         }
 
         /* --- FINAL SCREEN --- */
@@ -101,20 +107,19 @@
         .video-box { width: 100%; border-radius: 18px; overflow: hidden; line-height: 0; }
         #vid-music { width: 100%; }
 
-        /* စာတန်းပြေး (Horizontal Marquee) */
         .marquee { 
             width: 100%; overflow: hidden; margin-top: 15px; 
             background: rgba(255,255,255,0.2); border-radius: 10px;
-            padding: 5px 0;
+            padding: 8px 0;
         }
         .marquee p { 
             display: inline-block; 
-            white-space: nowrap; /* စာသားကို တစ်တန်းတည်းဖြစ်စေရန် */
+            white-space: nowrap; 
             padding-left: 100%; 
             animation: marqueeRun 15s linear infinite; 
             margin: 0;
             color: #1a4d55;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 500;
         }
         @keyframes marqueeRun { 
@@ -122,7 +127,7 @@
             100% { transform: translate(-100%, 0); } 
         }
 
-        .ok-btn { margin-top: 15px; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px 30px; cursor: pointer; color: #1a4d55; }
+        .ok-btn { margin-top: 15px; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px 35px; cursor: pointer; color: #1a4d55; font-weight: bold; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -138,7 +143,7 @@
         <div class="bowl-container" onclick="showBlessing()">
             <img src="first.png" class="bowl-img" alt="Silver Bowl">
         </div>
-        <div class="tap-text" onclick="showBlessing()">နှိပ်ပါ 💦</div>
+        <div class="tap-text" onclick="showBlessing()">ရေလောင်းပါရစေ 💦</div>
     </div>
 
     <div class="ios-alert-bg" id="blessing-alert" onclick="startSplash()">
@@ -147,7 +152,7 @@
                 <b>💦 ဆုမွန်ကောင်း 💦</b>
                 အေးမြတဲ့ သင်္ကြန်ရေနဲ့အတူ စိတ်၏ချမ်းသာခြင်း၊ ကိုယ်၏ကျန်းမာခြင်းနဲ့ ပြည့်စုံပါစေကြောင်း ဆုမွန်ကောင်းတောင်းအပ်ပါတယ်။
             </div>
-            <div class="ios-alert-btn">နှိပ်ပါ</div>
+            <div class="ios-alert-btn">ရေလောင်းပါရစေ</div>
         </div>
     </div>
 
