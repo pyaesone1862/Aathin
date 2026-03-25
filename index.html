@@ -16,19 +16,21 @@
             margin: 0; padding: 0; height: 100%; width: 100%;
             overflow: hidden; background: #d0f0f5; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            user-select: none; -webkit-user-select: none;
+            user-select: none; 
+            /* နှိပ်လိုက်ရင် အကွက်ပေါ်တာ ဖျောက်ဖို့ */
+            -webkit-tap-highlight-color: transparent; 
         }
 
         /* --- Global Rain (Full Screen) --- */
         #rain-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 20; /* အရာအားလုံးရဲ့ အပေါ်ကနေ ရွာမယ် */
+            pointer-events: none; z-index: 20;
         }
         .drop {
             position: absolute; 
-            width: 12px; height: 18px;
+            width: 10px; height: 16px;
             background-color: rgba(173, 216, 230, 0.6);
-            clip-path: path('M6,0 C6,0 12,9 12,12 A6,6 0 1,1 0,12 C0,9 6,0 6,0 Z');
+            clip-path: path('M5,0 C5,0 10,7 10,10 A5,5 0 1,1 0,10 C0,7 5,0 5,0 Z');
             animation: fallFull linear infinite;
         }
         @keyframes fallFull { 
@@ -36,7 +38,6 @@
             to { transform: translateY(110vh); } 
         }
 
-        /* Screens */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; z-index: 10;
@@ -44,19 +45,15 @@
 
         /* --- FIRST SCREEN --- */
         #first-screen { 
-            background: transparent;
-            justify-content: flex-end; 
-            align-items: center;
-            padding-bottom: 40px;
+            justify-content: flex-end; align-items: center; padding-bottom: 50px;
         }
         
         .bowl-container {
-            position: relative;
-            width: 85%; max-width: 360px;
-            cursor: pointer; line-height: 0;
-            z-index: 5;
+            position: relative; width: 85%; max-width: 360px;
+            cursor: pointer; line-height: 0; z-index: 5;
+            -webkit-tap-highlight-color: transparent;
         }
-        .bowl-img { width: 100%; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); }
+        .bowl-img { width: 100%; }
 
         .tap-text {
             margin-top: 15px; color: #1a4d55;
@@ -80,18 +77,17 @@
         .ios-alert-body { padding: 20px; color: #000; font-size: 14px; }
         .ios-alert-btn { border-top: 1px solid rgba(0,0,0,0.1); padding: 12px; color: var(--primary); font-weight: 600; cursor: pointer; }
 
-        /* --- SECOND VIDEO (SPLASH - ကျုံ့ထားသည်) --- */
+        /* --- SECOND VIDEO (SPLASH - အမြင့်တိုးထားသည်) --- */
         #splash-container {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: none; justify-content: center; align-items: center;
             background: #000; z-index: 80;
         }
         #vid-splash {
-            width: 85%; /* ဗီဒီယိုကို ဘေးကနေ ကျုံ့လိုက်တယ် */
-            max-height: 70%; 
-            border-radius: 20px; /* ထောင့်လေးတွေ ဝိုင်းထားမယ် */
-            box-shadow: 0 0 30px rgba(255,255,255,0.2);
-            object-fit: contain;
+            width: 90%; 
+            height: 75%; /* အပေါ်အောက် အမြင့်ကို တိုးလိုက်သည် */
+            border-radius: 15px;
+            object-fit: cover; /* ပုံစံမပျက်ဘဲ အကွက်ထဲအပြည့်ဖြစ်အောင် */
         }
 
         /* --- FINAL SCREEN --- */
@@ -105,11 +101,28 @@
         .video-box { width: 100%; border-radius: 18px; overflow: hidden; line-height: 0; }
         #vid-music { width: 100%; }
 
-        .marquee { width: 100%; overflow: hidden; margin-top: 15px; color: #1a4d55; }
-        .marquee p { display: inline-block; padding-left: 100%; animation: marqueeRun 12s linear infinite; margin: 0; }
-        @keyframes marqueeRun { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+        /* စာတန်းပြေး (Horizontal Marquee) */
+        .marquee { 
+            width: 100%; overflow: hidden; margin-top: 15px; 
+            background: rgba(255,255,255,0.2); border-radius: 10px;
+            padding: 5px 0;
+        }
+        .marquee p { 
+            display: inline-block; 
+            white-space: nowrap; /* စာသားကို တစ်တန်းတည်းဖြစ်စေရန် */
+            padding-left: 100%; 
+            animation: marqueeRun 15s linear infinite; 
+            margin: 0;
+            color: #1a4d55;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        @keyframes marqueeRun { 
+            0% { transform: translate(0, 0); } 
+            100% { transform: translate(-100%, 0); } 
+        }
 
-        .ok-btn { margin-top: 15px; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px 30px; cursor: pointer; }
+        .ok-btn { margin-top: 15px; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px 30px; cursor: pointer; color: #1a4d55; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -170,17 +183,14 @@
     </div>
 
     <script>
-        // 1. Full Screen Raindrops
         function makeRain() {
             const container = document.getElementById('rain-container');
-            const dropCount = 40; // တစ်ပြင်လုံးဆိုတော့ အရေအတွက်နည်းနည်းတိုးလိုက်တယ်
-            for (let i = 0; i < dropCount; i++) {
+            for (let i = 0; i < 35; i++) {
                 const drop = document.createElement('div');
                 drop.classList.add('drop');
                 drop.style.left = Math.random() * 100 + '%';
-                drop.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
-                drop.style.animationDelay = Math.random() * 3 + 's';
-                drop.style.opacity = Math.random() * 0.7 + 0.3;
+                drop.style.animationDuration = (Math.random() * 1.2 + 0.8) + 's';
+                drop.style.animationDelay = Math.random() * 2 + 's';
                 container.appendChild(drop);
             }
         }
@@ -188,14 +198,13 @@
 
         function showBlessing() {
             const bgAudio = document.getElementById('bg-audio-four');
-            bgAudio.play().catch(e => console.log("Audio play deferred"));
+            bgAudio.play().catch(e => {});
             document.getElementById('blessing-alert').style.display = 'flex';
         }
 
         function startSplash() {
             document.getElementById('blessing-alert').style.display = 'none';
             document.getElementById('first-screen').classList.add('hidden');
-            // မိုးရွာတာကို Splash Video ပြနေတုန်း ခေတ္တဖျောက်ထားမယ်
             document.getElementById('rain-container').style.display = 'none';
             
             const splashContainer = document.getElementById('splash-container');
@@ -211,11 +220,9 @@
         }
 
         function startMusic() {
-            // Background Audio ကို ရပ်မယ်
             const bgAudio = document.getElementById('bg-audio-four');
-            if(bgAudio) { bgAudio.pause(); bgAudio.currentTime = 0; }
+            if(bgAudio) { bgAudio.pause(); }
 
-            // မိုးပြန်ရွာမယ် (Final Screen မှာ မြင်ရအောင်)
             document.getElementById('rain-container').style.display = 'block';
             document.getElementById('final-screen').classList.remove('hidden');
             document.getElementById('final-card').style.display = 'flex';
